@@ -49,7 +49,13 @@ TRANSLATIONS = {
         'actual': 'Actual',
         'tolerance_zone': 'Tolerance Zone',
         'weekly_completion_rate': 'Weekly Completion Rate',
-        'compliance_rate': 'Compliance Rate'
+        'compliance_rate': 'Compliance Rate',
+        'col_theme': 'Theme',
+        'col_date': 'Date',
+        'col_responsible': 'Responsible',
+        'col_action': 'Action',
+        'col_deadline': 'Deadline',
+        'col_status': 'Status'
     },
     'de': {
         'title': 'TÄGLICHES PRODUKTIONS-DASHBOARD',
@@ -89,7 +95,13 @@ TRANSLATIONS = {
         'actual': 'Ist',
         'tolerance_zone': 'Toleranzbereich',
         'weekly_completion_rate': 'Wöchentliche Abschlussrate',
-        'compliance_rate': 'Einhaltungsrate'
+        'compliance_rate': 'Einhaltungsrate',
+        'col_theme': 'Thema',
+        'col_date': 'Datum',
+        'col_responsible': 'Verantwortlich',
+        'col_action': 'Aktion',
+        'col_deadline': 'Deadline',
+        'col_status': 'Status'
     }
 }
 
@@ -147,21 +159,21 @@ st.markdown("""
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     transition: transform 0.2s, box-shadow 0.2s;
     height: 100%;
-    border-left: 6px solid transparent;
+    border: 6px solid transparent;
 }
 .metric-card:hover { 
     transform: translateY(-3px); 
     box-shadow: 0 6px 16px rgba(0,0,0,0.3); 
 }
 .metric-card.status-good {
-    border-left-color: #2e7d32 !important;
+    border-color: #2e7d32 !important;
     box-shadow: 0 3px 10px rgba(46, 125, 50, 0.25);
 }
 .metric-card.status-good:hover {
     box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
 }
 .metric-card.status-bad {
-    border-left-color: #c62828 !important;
+    border-color: #c62828 !important;
     box-shadow: 0 3px 10px rgba(198, 40, 40, 0.25);
 }
 .metric-card.status-bad:hover {
@@ -392,7 +404,21 @@ elif cycle_tist > cycle_grenze:
 else:
     cycle_t_gap = cycle_tist + cycle_grenze
 
-last_week = weekly_df.iloc[-1]
+# Trouver la semaine correspondant à current_date (pas forcément la dernière ligne)
+# Calculer le numéro de semaine de current_date
+import datetime
+current_week_number = current_date.isocalendar()[1]
+
+# Chercher la ligne dans weekly_df qui correspond à cette semaine
+matching_weeks = weekly_df[weekly_df['Week'] == current_week_number]
+
+if len(matching_weeks) > 0:
+    # Prendre la dernière occurrence si plusieurs (au cas où il y aurait plusieurs années)
+    last_week = matching_weeks.iloc[-1]
+else:
+    # Fallback : prendre la dernière semaine disponible
+    last_week = weekly_df.iloc[-1]
+
 w_gap = last_week['WCompleted'] - last_week['WTotal']
 
 # Préparer les données pour les graphiques modaux
@@ -541,8 +567,8 @@ def show_kunde_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242')
     )
@@ -600,8 +626,8 @@ def show_liefer_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242')
     )
@@ -658,8 +684,8 @@ def show_risk_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242'),
         yaxis_title=t['risks_identified'],
@@ -712,8 +738,8 @@ def show_frtx_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242')
     )
@@ -775,8 +801,8 @@ def show_cycle_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242'),
         yaxis_title='€',
@@ -828,8 +854,8 @@ def show_saa_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242'),
         yaxis_title='%',
@@ -882,8 +908,8 @@ def show_abw_chart():
         hovermode='x unified',
         plot_bgcolor='white',
         paper_bgcolor='white',
-        height=450,
-        margin=dict(l=10, r=10, t=40, b=10),
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
         font=dict(size=11, color='#424242'),
         yaxis_title=t['absences_today'],
@@ -900,6 +926,83 @@ def show_abw_chart():
     )
     
     st.plotly_chart(fig_abw, use_container_width=True)
+
+
+@st.dialog(t['shipments'], width="large")
+def show_shipments_chart():
+    """Modal pour Shipments - Graphique hebdomadaire"""
+    fig_ship = go.Figure()
+    
+    # Extraire les 5 dernières semaines
+    recent_weeks = weekly_df.tail(5) if len(weekly_df) >= 5 else weekly_df
+    
+    # Positions des barres pour chaque semaine
+    weeks = recent_weeks['Week'].astype(str)
+    x_positions = list(range(len(weeks)))
+    
+    # Barres: Completed (gauche) et Total (droite)
+    bar_width = 0.35
+    
+    # Barres des shipments réalisés (à gauche, rouge si < total, vert si = total)
+    completed = recent_weeks['WCompleted'].values
+    total = recent_weeks['WTotal'].values
+    bar_colors_completed = ['#66bb6a' if c >= t else '#ef5350' for c, t in zip(completed, total)]
+    
+    fig_ship.add_trace(
+        go.Bar(
+            x=[i - bar_width/2 for i in x_positions],
+            y=completed,
+            name=t['actual'],
+            marker_color=bar_colors_completed,
+            width=bar_width,
+            text=completed,
+            textposition='outside',
+            textfont=dict(color='#424242', size=10)
+        )
+    )
+    
+    # Barres du total attendu (à droite, bleu foncé)
+    fig_ship.add_trace(
+        go.Bar(
+            x=[i + bar_width/2 for i in x_positions],
+            y=total,
+            name='Total',
+            marker_color='#1565c0',
+            width=bar_width,
+            text=total,
+            textposition='outside',
+            textfont=dict(color='#424242', size=10)
+        )
+    )
+    
+    fig_ship.update_layout(
+        title=dict(text=t['shipments'], font=dict(color='#1a237e', size=16, family='Arial Black')),
+        xaxis=dict(
+            tickmode='array',
+            tickvals=x_positions,
+            ticktext=[f"{t['week']} {w}" for w in weeks],
+            title='',
+            tickfont=dict(color='#424242')
+        ),
+        yaxis=dict(
+            title=t['deliveries_completed'],
+            title_font=dict(color='#424242'),
+            showgrid=True,
+            gridcolor='#f0f0f0',
+            rangemode='tozero'
+        ),
+        hovermode='x unified',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        height=350,
+        margin=dict(l=10, r=10, t=60, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
+        font=dict(size=11, color='#424242'),
+        barmode='group'
+    )
+    
+    st.plotly_chart(fig_ship, use_container_width=True)
+
 
 # Titre principal
 st.markdown(f"""
@@ -1067,11 +1170,13 @@ with tab1:
             show_cycle_chart()
     
     with col6:
-        # Shipments - PAS DE MODAL (données hebdomadaires)
         color = 'green' if last_week['WCompleted'] >= last_week['WTotal'] else 'red'
         status_class = 'status-good' if last_week['WCompleted'] >= last_week['WTotal'] else 'status-bad'
+        
+        clicked = st.button('', key='btn_shipments', help='📊 Cliquer pour voir le graphique détaillé', use_container_width=True, type='secondary')
+        
         st.markdown(f"""
-        <div class="metric-card {status_class}">
+        <div class="metric-card {status_class}" style="margin-top: -60px; position: relative; z-index: 1; pointer-events: none;">
             <div class="metric-header">{t['shipments']} ({t['week']} {last_week['Week']:.0f})</div>
             <div class="metric-value {color}">{last_week['WCompleted']:.0f}/{last_week['WTotal']:.0f}</div>
             <div class="metric-label">{t['deliveries_completed']}</div>
@@ -1081,8 +1186,12 @@ with tab1:
                     <div class="metric-sub-label">{t['gap']}</div>
                 </div>
             </div>
+            <div style="position: absolute; top: 10px; right: 12px; font-size: 18px; opacity: 0.4;">📊</div>
         </div>
         """, unsafe_allow_html=True)
+        
+        if clicked:
+            show_shipments_chart()
     
     with col7:
         color = 'green' if last_row['SAA_MIST'] >= saa_percent_soll else 'red'
@@ -1114,19 +1223,57 @@ with tab1:
     col8, col9 = st.columns([3, 1])
     
     with col8:
+        # Espaceur pour aligner avec la carte Absences qui a un bouton invisible
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+        
         st.markdown(f"<div class='section-header'>{t['actions']}</div>", unsafe_allow_html=True)
         
+        # Préparer le DataFrame avec les bonnes colonnes
+        actions_display = actions_df.copy()
+        
+        # Convertir les dates sans afficher les heures
+        actions_display['Datum'] = pd.to_datetime(actions_display['Datum'], format='%Y-%m-%d', errors='coerce').dt.strftime('%d/%m/%Y')
+        actions_display['Deadline'] = pd.to_datetime(actions_display['Deadline'], format='%Y-%m-%d', errors='coerce')
+        actions_display['Deadline_display'] = actions_display['Deadline'].dt.strftime('%d/%m/%Y')
+        
+        # Sélectionner les colonnes à afficher (sans ID)
+        actions_to_show = actions_display[['Thema', 'Datum', 'Verantwortlich', 'Aktion', 'Deadline_display', 'Status']].copy()
+        
+        # Renommer les colonnes selon la langue
+        actions_to_show.columns = [
+            t['col_theme'],
+            t['col_date'],
+            t['col_responsible'],
+            t['col_action'],
+            t['col_deadline'],
+            t['col_status']
+        ]
+        
+        # Fonction de coloration avec nouvelles règles
         def highlight_status(row):
-            if row['Status'] == 'Überfällig':
+            # Récupérer le statut et la deadline originale pour la comparaison
+            idx = row.name
+            status = actions_display.iloc[idx]['Status']
+            deadline = actions_display.iloc[idx]['Deadline']
+            
+            # Vert si Completed
+            if status == 'Completed':
+                return ['background-color: #2e7d32; color: white; font-weight: bold'] * len(row)
+            
+            # Jaune si In progress ET deadline > date actuelle (encore du temps)
+            elif status == 'In progress':
+                if pd.notna(deadline) and deadline > current_date:
+                    return ['background-color: #ffa726; color: white; font-weight: bold'] * len(row)
+                else:
+                    # En retard : rouge
+                    return ['background-color: #c62828; color: white; font-weight: bold'] * len(row)
+            
+            # Rouge pour tous les autres cas (Not started, ou autres)
+            else:
                 return ['background-color: #c62828; color: white; font-weight: bold'] * len(row)
-            elif row['Status'] == 'In Progress':
-                return ['background-color: #f57c00; color: white'] * len(row)
-            elif row['Status'] == 'Done':
-                return ['background-color: #2e7d32; color: white'] * len(row)
-            return [''] * len(row)
         
         st.dataframe(
-            actions_df.style.apply(highlight_status, axis=1),
+            actions_to_show.style.apply(highlight_status, axis=1),
             use_container_width=True,
             hide_index=True,
             height=200
@@ -1260,7 +1407,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242')
         )
@@ -1319,7 +1466,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242')
         )
@@ -1377,7 +1524,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242'),
             yaxis_title=t['risks_identified'],
@@ -1430,7 +1577,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242')
         )
@@ -1499,7 +1646,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242'),
             yaxis_title='€',
@@ -1550,7 +1697,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242'),
             yaxis_title='%',
@@ -1602,7 +1749,7 @@ with tab2:
             plot_bgcolor='white',
             paper_bgcolor='white',
             height=350,
-            margin=dict(l=10, r=10, t=40, b=10),
+            margin=dict(l=10, r=10, t=60, b=10),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
             font=dict(size=11, color='#424242'),
             yaxis_title=t['absences_today'],
@@ -1619,3 +1766,79 @@ with tab2:
         )
         
         st.plotly_chart(fig_abw, use_container_width=True)
+    
+    # Ligne 4: Shipments (graphique hebdomadaire)
+    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    col_ship = st.columns(1)[0]
+    
+    with col_ship:
+        # Shipments - Graphique hebdomadaire avec barres groupées
+        fig_ship_analytics = go.Figure()
+        
+        # Extraire les 5 dernières semaines
+        recent_weeks = weekly_df.tail(5) if len(weekly_df) >= 5 else weekly_df
+        
+        # Positions des barres
+        weeks = recent_weeks['Week'].astype(str)
+        x_positions = list(range(len(weeks)))
+        bar_width = 0.35
+        
+        # Barres réalisées (à gauche)
+        completed = recent_weeks['WCompleted'].values
+        total = recent_weeks['WTotal'].values
+        bar_colors_completed = ['#66bb6a' if c >= t else '#ef5350' for c, t in zip(completed, total)]
+        
+        fig_ship_analytics.add_trace(
+            go.Bar(
+                x=[i - bar_width/2 for i in x_positions],
+                y=completed,
+                name=t['actual'],
+                marker_color=bar_colors_completed,
+                width=bar_width,
+                text=completed,
+                textposition='outside',
+                textfont=dict(color='#424242', size=10)
+            )
+        )
+        
+        # Barres total attendu (à droite, bleu foncé)
+        fig_ship_analytics.add_trace(
+            go.Bar(
+                x=[i + bar_width/2 for i in x_positions],
+                y=total,
+                name='Total',
+                marker_color='#1565c0',
+                width=bar_width,
+                text=total,
+                textposition='outside',
+                textfont=dict(color='#424242', size=10)
+            )
+        )
+        
+        fig_ship_analytics.update_layout(
+            title=dict(text=t['shipments'], font=dict(color='#1a237e', size=14, family='Arial Black')),
+            xaxis=dict(
+                tickmode='array',
+                tickvals=x_positions,
+                ticktext=[f"{t['week']} {w}" for w in weeks],
+                title='',
+                tickfont=dict(color='#424242')
+            ),
+            yaxis=dict(
+                title=t['deliveries_completed'],
+                title_font=dict(color='#424242'),
+                showgrid=True,
+                gridcolor='#f0f0f0',
+                rangemode='tozero'
+            ),
+            hovermode='x unified',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            height=350,
+            margin=dict(l=10, r=10, t=60, b=10),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color='#424242')),
+            font=dict(size=11, color='#424242'),
+            barmode='group'
+        )
+        
+        st.plotly_chart(fig_ship_analytics, use_container_width=True)
