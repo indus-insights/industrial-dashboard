@@ -336,10 +336,13 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Bouton refresh sous le sélecteur de langue
-if st.button(t['refresh_button'], help=t['refresh_help']):
+# Bouton refresh sous le sélecteur de langue (avec container visible pour debug)
+st.markdown("<div style='background: yellow; padding: 10px; margin: 10px;'>", unsafe_allow_html=True)
+st.write("DEBUG: Le bouton devrait être ici 👇")
+if st.button(t['refresh_button'], help=t['refresh_help'], key='refresh_btn'):
     st.cache_data.clear()
     st.rerun()
+st.markdown("</div>", unsafe_allow_html=True)
 
 params = st.query_params
 if 'lang' in params:
