@@ -412,10 +412,10 @@ def get_gsheet_client():
 
 # Charger les données depuis Google Sheets
 @st.cache_data(ttl=300) # 5 minutes de cache
-def load_data_from_sheets(_client, _force_refresh=None):
+def load_data_from_sheets(_client, force_refresh=0):
     """
     Charge les données depuis Google Sheets
-    _force_refresh permet de forcer le rechargement même si le cache est valide
+    force_refresh permet de forcer le rechargement même si le cache est valide
     """
     try:
         # Ouvrir le fichier Google Sheets par URL
