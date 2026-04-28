@@ -330,46 +330,12 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
-/* Style BEAU pour le bouton refresh Streamlit - positionné en haut à droite */
-.refresh-button-container {{
-    position: fixed;
-    top: 310px;
-    right: 30px;
-    z-index: 9999;
-}}
-.refresh-button-container button[kind="primary"] {{
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
-    border: none !important;
-    border-radius: 25px !important;
-    padding: 10px 20px !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    color: white !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
-    cursor: pointer !important;
-}}
-.refresh-button-container button[kind="primary"]:hover {{
-    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%) !important;
-    transform: translateY(-2px) scale(1.05) !important;
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4) !important;
-}}
-.refresh-button-container button[kind="primary"]:active {{
-    transform: translateY(0px) scale(0.98) !important;
-}}
 </style>
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
 </div>
 """, unsafe_allow_html=True)
-
-# Bouton refresh BEAU en haut à droite
-st.markdown('<div class="refresh-button-container">', unsafe_allow_html=True)
-if st.button(t['refresh_button'], help=t['refresh_help'], type="primary", key="refresh_beautiful"):
-    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-    st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
 
 params = st.query_params
 
@@ -1130,6 +1096,13 @@ st.markdown(f"""
     <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
 </div>
 """, unsafe_allow_html=True)
+
+# Bouton refresh JUSTE AVANT les onglets, aligné à droite
+col_empty, col_refresh_btn = st.columns([5, 1])
+with col_refresh_btn:
+    if st.button("🔄 " + t['refresh_button'], type="primary", key="refresh_final", help=t['refresh_help']):
+        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+        st.rerun()
 
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
 
