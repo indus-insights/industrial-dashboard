@@ -371,7 +371,7 @@ def load_data_from_sheets(_client):
     """
     try:
         # Ouvrir le fichier Google Sheets par URL
-        GOOGLE_SHEETS_URL = "TON_URL_ICI"  # ⚠️ REMPLACE par ton URL
+        GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/1xzFbW08QXRKaD0snOvIVCjrN7itxfzXJBV6KjoO25hw/edit"  # ⚠️ REMPLACE par ton URL
         
         spreadsheet = _client.open_by_url(GOOGLE_SHEETS_URL)
         
