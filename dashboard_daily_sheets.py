@@ -351,17 +351,15 @@ st.markdown(f"""
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
-    <button class="refresh-btn" onclick="console.log('BOUTON CLIQUÉ'); alert('Test: bouton cliqué!'); window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
+    <button class="refresh-btn" onclick="window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
 </div>
 """, unsafe_allow_html=True)
 
 params = st.query_params
 
-# Détecter le clic sur le bouton refresh
+# Détecter le clic sur le bouton refresh HTML
 if 'refresh' in params:
-    if 'refresh_count' not in st.session_state:
-        st.session_state.refresh_count = 0
-    st.session_state.refresh_count += 1
+    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
     st.query_params.clear()
     st.rerun()
 
@@ -376,17 +374,6 @@ if 'lang' in params:
 # Initialiser refresh_count si pas existant
 if 'refresh_count' not in st.session_state:
     st.session_state.refresh_count = 0
-
-# BOUTON REFRESH EN HAUT À DROITE DE LA PAGE
-col_empty, col_refresh, col_debug = st.columns([4, 1, 1])
-with col_refresh:
-    if st.button("🔄 " + t['refresh_button'], help=t['refresh_help'], use_container_width=True, type="primary", key="refresh_main"):
-        st.session_state.refresh_count += 1
-        st.rerun()
-
-with col_debug:
-    # Afficher le compteur pour voir s'il change
-    st.write(f"🔢 Count: {st.session_state.refresh_count}")
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
