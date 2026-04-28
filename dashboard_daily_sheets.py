@@ -56,7 +56,7 @@ TRANSLATIONS = {
         'col_action': 'Action',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': 'Refresh',
+        'refresh_button': '🔄 Refresh',
         'refresh_help': 'Reload data from Google Sheets'
     },
     'de': {
@@ -104,7 +104,7 @@ TRANSLATIONS = {
         'col_action': 'Aktion',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': 'Aktualisieren',
+        'refresh_button': '🔄 Refresh',
         'refresh_help': 'Reload data from Google Sheets'
     }
 }
@@ -143,6 +143,23 @@ st.markdown("""
     font-weight: 600;
     color: #666;
     margin-top: 4px;
+}
+.refresh-mini-btn {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 4px 10px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
+}
+.refresh-mini-btn:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.35);
 }
 .section-header {
     font-size: 14px;
@@ -290,14 +307,14 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Switch de langue AVEC bouton refresh intégré en HTML pur
+# Switch de langue
 st.markdown(f"""
 <style>
 .language-selector {{
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 9999;
+    z-index: 1000;
     background: white;
     border-radius: 25px;
     padding: 6px;
@@ -315,7 +332,6 @@ st.markdown(f"""
     user-select: none;
     text-decoration: none;
     display: block;
-    pointer-events: auto;
 }}
 .lang-option.inactive {{
     color: #999;
@@ -330,30 +346,6 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
-/* Mini bouton refresh sticky en haut à droite */
-.sticky-refresh-btn {{
-    position: fixed;
-    top: 130px;
-    right: 30px;
-    z-index: 9999;
-}}
-.sticky-refresh-btn button {{
-    background: #4CAF50 !important;
-    border: none !important;
-    border-radius: 15px !important;
-    padding: 6px 12px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: white !important;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25) !important;
-    transition: all 0.2s !important;
-    cursor: pointer !important;
-}}
-.sticky-refresh-btn button:hover {{
-    background: #45a049 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.35) !important;
-}}
 </style>
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
@@ -362,24 +354,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 params = st.query_params
-
-# Détecter le clic sur le bouton refresh HTML
-if 'refresh' in params:
-    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-    st.query_params.clear()
-    st.rerun()
-
-# Détecter le changement de langue
 if 'lang' in params:
     new_lang = params['lang']
     if new_lang in ['en', 'de'] and new_lang != st.session_state.language:
         st.session_state.language = new_lang
         st.query_params.clear()
         st.rerun()
-
-# Initialiser refresh_count si pas existant
-if 'refresh_count' not in st.session_state:
-    st.session_state.refresh_count = 0
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
@@ -405,10 +385,10 @@ def get_gsheet_client():
 
 # Charger les données depuis Google Sheets
 @st.cache_data(ttl=300) # 5 minutes de cache
-def load_data_from_sheets(_client, force_refresh=0):
+def load_data_from_sheets(_client):
     """
     Charge les données depuis Google Sheets
-    force_refresh permet de forcer le rechargement même si le cache est valide
+    ttl=60 signifie que les données sont actualisées toutes les 60 secondes
     """
     try:
         # Ouvrir le fichier Google Sheets par URL
@@ -461,8 +441,8 @@ def load_data_from_sheets(_client, force_refresh=0):
 # Initialiser la connexion
 gsheet_client = get_gsheet_client()
 
-# Charger les données (avec force refresh via session state)
-daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client, st.session_state.refresh_count)
+# Charger les données
+daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client)
 last_row = daily_df.iloc[-1]
 current_date = last_row['Date']
 
@@ -1113,22 +1093,25 @@ def show_shipments_chart():
     
     st.plotly_chart(fig_ship, use_container_width=True)
 
-# Titre principal (centré)
+# Bouton refresh
+col_refresh_left, col_refresh_right = st.columns([6, 1])
+with col_refresh_right:
+    if st.button(t['refresh_button'], help=t['refresh_help']):
+        st.cache_data.clear()
+        st.rerun()
+
+# Titre principal avec bouton refresh intégré
 st.markdown(f"""
 <div class='main-header'>
     <div class='dashboard-title'>{t['title']}</div>
-    <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
+    <div class='dashboard-date'>
+        {current_date.strftime('%d.%m.%Y')}
+        <span class='refresh-mini-btn' onclick='window.location.href = window.location.pathname + "?refresh=" + Date.now()' title='{t["refresh_help"]}'>🔄</span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
-
-# Mini bouton refresh sticky (toujours visible)
-st.markdown('<div class="sticky-refresh-btn">', unsafe_allow_html=True)
-if st.button("🔄", type="primary", key="refresh_sticky", help=t['refresh_help']):
-    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-    st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
 # ONGLET 1: DASHBOARD AVEC CARTES CLIQUABLES
