@@ -297,7 +297,7 @@ st.markdown(f"""
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1000;
+    z-index: 9999;
     background: white;
     border-radius: 25px;
     padding: 6px;
@@ -315,6 +315,7 @@ st.markdown(f"""
     user-select: none;
     text-decoration: none;
     display: block;
+    pointer-events: auto;
 }}
 .lang-option.inactive {{
     color: #999;
@@ -333,11 +334,14 @@ st.markdown(f"""
     padding: 8px 12px;
     border-radius: 20px;
     font-size: 18px;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.2s;
-    background: #4CAF50;
+    background: #4CAF50 !important;
     border: none;
     color: white;
+    pointer-events: auto !important;
+    z-index: 10000 !important;
+    position: relative !important;
 }}
 .refresh-btn:hover {{
     background: #45a049;
