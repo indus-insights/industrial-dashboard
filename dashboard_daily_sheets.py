@@ -1076,20 +1076,22 @@ def show_shipments_chart():
     
     st.plotly_chart(fig_ship, use_container_width=True)
 
-# Bouton refresh
-col_refresh_left, col_refresh_right = st.columns([6, 1])
-with col_refresh_right:
-    if st.button(t['refresh_button'], help=t['refresh_help']):
+# Titre principal avec bouton refresh intégré
+col_title, col_refresh = st.columns([6, 1])
+
+with col_title:
+    st.markdown(f"""
+    <div class='main-header'>
+        <div class='dashboard-title'>{t['title']}</div>
+        <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_refresh:
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)  # Espaceur pour aligner
+    if st.button(t['refresh_button'], help=t['refresh_help'], use_container_width=True):
         st.cache_data.clear()
         st.rerun()
-
-# Titre principal
-st.markdown(f"""
-<div class='main-header'>
-    <div class='dashboard-title'>{t['title']}</div>
-    <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
-</div>
-""", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
 
