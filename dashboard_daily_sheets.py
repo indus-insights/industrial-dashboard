@@ -365,43 +365,45 @@ def get_gsheet_client():
 # Charger les données depuis Google Sheets
 @st.cache_data(ttl=60)
 def load_data_from_sheets(_client):
+    """
+    Charge les données depuis Google Sheets
+    ttl=60 signifie que les données sont actualisées toutes les 60 secondes
+    """
     try:
-        # Test 1 : Lister tous les fichiers accessibles
-        st.write("📂 Fichiers Google Sheets accessibles :")
-        all_files = _client.openall()
-        for f in all_files[:5]:  # Affiche les 5 premiers
-            st.write(f"- {f.title} (ID: {f.id})")
-        
-        # Test 2 : Ouvrir par URL
-        GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/1xzFbW08QXRKaD0snOvIVCjrN7itxfzXJBV6KjoO25hw/edit"  # Change ça !
-        st.write(f"🔗 Tentative d'ouverture : {GOOGLE_SHEETS_URL}")
+        # Ouvrir le fichier Google Sheets par URL
+        GOOGLE_SHEETS_URL = "TON_URL_ICI"  # ⚠️ REMPLACE par ton URL
         
         spreadsheet = _client.open_by_url(GOOGLE_SHEETS_URL)
-        st.success(f"✅ Fichier ouvert : {spreadsheet.title}")
         
-        # Test 3 : Lister les feuilles
-        st.write("📊 Feuilles disponibles :")
-        for sheet in spreadsheet.worksheets():
-            st.write(f"- {sheet.title}")
-        
-        # Test 4 : Lire une feuille
+        # Lire chaque feuille
         daily_sheet = spreadsheet.worksheet("KPI_Daily")
-        st.write(f"✅ Feuille KPI_Daily trouvée : {daily_sheet.row_count} lignes")
+        weekly_sheet = spreadsheet.worksheet("KPI_Weekly")
+        soll_sheet = spreadsheet.worksheet("SOLL")
+        actions_sheet = spreadsheet.worksheet("Actions")
         
-        # Test 5 : Récupérer les données
-        daily_data = daily_sheet.get_all_records()
-        st.write(f"📊 Données : {len(daily_data)} lignes récupérées")
-        st.write("Aperçu :", daily_data[:2])
+        # Convertir en DataFrames
+        daily = pd.DataFrame(daily_sheet.get_all_records())
+        weekly = pd.DataFrame(weekly_sheet.get_all_records())
+        soll = pd.DataFrame(soll_sheet.get_all_records())
+        actions = pd.DataFrame(actions_sheet.get_all_records())
         
-        # Si tout fonctionne, convertir
-        daily = pd.DataFrame(daily_data)
-        st.dataframe(daily.head())
+        # Convertir la colonne Date (accepte plusieurs formats)
+        daily['Date'] = pd.to_datetime(daily['Date'], dayfirst=True, errors='coerce')
         
-        return daily, None, None, None
+        return daily, weekly, soll, actions
         
+    except gspread.SpreadsheetNotFound:
+        st.error("❌ Fichier Google Sheets non trouvé!")
+        st.error("📝 Vérifiez l'URL du Google Sheets dans le code")
+        st.error("🔑 Vérifiez que le Service Account a accès au fichier")
+        st.stop()
+    except gspread.WorksheetNotFound as e:
+        st.error(f"❌ Feuille non trouvée: {e}")
+        st.error("📝 Vérifiez les noms des onglets: KPI_Daily, KPI_Weekly, SOLL, Actions")
+        st.stop()
     except Exception as e:
-        st.error(f"❌ Erreur : {type(e).__name__}")
-        st.error(f"Message : {str(e)}")
+        st.error(f"❌ Erreur inattendue: {type(e).__name__}")
+        st.error(f"📝 Détails: {str(e)}")
         import traceback
         st.code(traceback.format_exc())
         st.stop()
