@@ -1083,13 +1083,6 @@ with col_refresh_right:
         st.cache_data.clear()
         st.rerun()
 
-# Bouton refresh en haut à droite (Streamlit pur)
-col_space, col_btn = st.columns([11, 1])
-with col_btn:
-    if st.button("🔄", key="refresh_top", help=t['refresh_help']):
-        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-        st.rerun()
-
 # Titre principal
 st.markdown(f"""
 <div class='main-header'>
@@ -1097,6 +1090,13 @@ st.markdown(f"""
     <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
 </div>
 """, unsafe_allow_html=True)
+
+# Bouton refresh avant les onglets
+col_empty, col_refresh_btn = st.columns([5, 1])
+with col_refresh_btn:
+    if st.button("🔄 " + t['refresh_button'], type="primary", key="refresh_final", help=t['refresh_help']):
+        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+        st.rerun()
 
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
 
