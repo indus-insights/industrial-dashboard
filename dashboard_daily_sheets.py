@@ -395,6 +395,10 @@ def load_data_from_sheets(_client):
         weekly['WCompleted'] = pd.to_numeric(weekly['WCompleted'], errors='coerce')
         weekly['WTotal'] = pd.to_numeric(weekly['WTotal'], errors='coerce')
 
+        # Convertir les dates du tableau Actions
+        actions['Datum'] = pd.to_datetime(actions['Datum'], dayfirst=True, errors='coerce')
+        actions['Deadline'] = pd.to_datetime(actions['Deadline'], dayfirst=True, errors='coerce')
+        
         return daily, weekly, soll, actions
         
     except gspread.SpreadsheetNotFound:
