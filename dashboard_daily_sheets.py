@@ -347,11 +347,19 @@ st.markdown(f"""
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
-    <button class="refresh-btn" onclick="window.location.href = window.location.href.split('?')[0]" title="{t['refresh_help']}">🔄</button>
+    <button class="refresh-btn" onclick="window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
 </div>
 """, unsafe_allow_html=True)
 
 params = st.query_params
+
+# Détecter le clic sur le bouton refresh
+if 'refresh' in params:
+    st.cache_data.clear()
+    st.query_params.clear()
+    st.rerun()
+
+# Détecter le changement de langue
 if 'lang' in params:
     new_lang = params['lang']
     if new_lang in ['en', 'de'] and new_lang != st.session_state.language:
