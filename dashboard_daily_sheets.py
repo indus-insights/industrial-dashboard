@@ -56,7 +56,7 @@ TRANSLATIONS = {
         'col_action': 'Action',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': '🔄 Refresh',
+        'refresh_button': 'Refresh',
         'refresh_help': 'Reload data from Google Sheets'
     },
     'de': {
@@ -104,7 +104,7 @@ TRANSLATIONS = {
         'col_action': 'Aktion',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': '🔄 Refresh',
+        'refresh_button': 'Aktualisieren',
         'refresh_help': 'Reload data from Google Sheets'
     }
 }
@@ -330,11 +330,11 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
-/* Style BEAU pour le bouton refresh Streamlit - positionné fixe à gauche */
+/* Style BEAU pour le bouton refresh Streamlit - positionné en haut à droite */
 .refresh-button-container {{
     position: fixed;
-    top: 75px;
-    left: 20px;
+    top: 310px;
+    right: 30px;
     z-index: 9999;
 }}
 .refresh-button-container button[kind="primary"] {{
@@ -342,7 +342,7 @@ st.markdown(f"""
     border: none !important;
     border-radius: 25px !important;
     padding: 10px 20px !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     font-weight: 700 !important;
     color: white !important;
     transition: all 0.3s ease !important;
@@ -364,9 +364,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Bouton refresh BEAU juste sous le sélecteur de langue
+# Bouton refresh BEAU en haut à droite
 st.markdown('<div class="refresh-button-container">', unsafe_allow_html=True)
-if st.button("🔄 " + t['refresh_button'], help=t['refresh_help'], type="primary", key="refresh_beautiful"):
+if st.button(t['refresh_button'], help=t['refresh_help'], type="primary", key="refresh_beautiful"):
     st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
     st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
