@@ -56,7 +56,7 @@ TRANSLATIONS = {
         'col_action': 'Action',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': 'Refresh',
+        'refresh_button': '🔄 Refresh',
         'refresh_help': 'Reload data from Google Sheets'
     },
     'de': {
@@ -104,7 +104,7 @@ TRANSLATIONS = {
         'col_action': 'Aktion',
         'col_deadline': 'Deadline',
         'col_status': 'Status',
-        'refresh_button': 'Aktualisieren',
+        'refresh_button': '🔄 Refresh',
         'refresh_help': 'Reload data from Google Sheets'
     }
 }
@@ -290,14 +290,14 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Switch de langue AVEC bouton refresh intégré en HTML pur
+# Switch de langue
 st.markdown(f"""
 <style>
 .language-selector {{
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 9999;
+    z-index: 1000;
     background: white;
     border-radius: 25px;
     padding: 6px;
@@ -315,7 +315,6 @@ st.markdown(f"""
     user-select: none;
     text-decoration: none;
     display: block;
-    pointer-events: auto;
 }}
 .lang-option.inactive {{
     color: #999;
@@ -338,24 +337,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 params = st.query_params
-
-# Détecter le clic sur le bouton refresh HTML
-if 'refresh' in params:
-    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-    st.query_params.clear()
-    st.rerun()
-
-# Détecter le changement de langue
 if 'lang' in params:
     new_lang = params['lang']
     if new_lang in ['en', 'de'] and new_lang != st.session_state.language:
         st.session_state.language = new_lang
         st.query_params.clear()
         st.rerun()
-
-# Initialiser refresh_count si pas existant
-if 'refresh_count' not in st.session_state:
-    st.session_state.refresh_count = 0
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
@@ -380,11 +367,11 @@ def get_gsheet_client():
     return gspread.authorize(credentials)
 
 # Charger les données depuis Google Sheets
-@st.cache_data(ttl=300) # 5 minutes de cache
-def load_data_from_sheets(_client, force_refresh=0):
+@st.cache_data(ttl=30) # 30 secondes - parfait pour les réunions
+def load_data_from_sheets(_client):
     """
     Charge les données depuis Google Sheets
-    force_refresh permet de forcer le rechargement même si le cache est valide
+    ttl=60 signifie que les données sont actualisées toutes les 60 secondes
     """
     try:
         # Ouvrir le fichier Google Sheets par URL
@@ -437,8 +424,8 @@ def load_data_from_sheets(_client, force_refresh=0):
 # Initialiser la connexion
 gsheet_client = get_gsheet_client()
 
-# Charger les données (avec force refresh via session state)
-daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client, st.session_state.refresh_count)
+# Charger les données
+daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client)
 last_row = daily_df.iloc[-1]
 current_date = last_row['Date']
 
@@ -1089,20 +1076,20 @@ def show_shipments_chart():
     
     st.plotly_chart(fig_ship, use_container_width=True)
 
-# Titre principal (centré)
+# Bouton refresh
+col_refresh_left, col_refresh_right = st.columns([6, 1])
+with col_refresh_right:
+    if st.button(t['refresh_button'], help=t['refresh_help']):
+        st.cache_data.clear()
+        st.rerun()
+
+# Titre principal
 st.markdown(f"""
 <div class='main-header'>
     <div class='dashboard-title'>{t['title']}</div>
     <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
 </div>
 """, unsafe_allow_html=True)
-
-# Bouton refresh JUSTE AVANT les onglets, aligné à droite
-col_empty, col_refresh_btn = st.columns([5, 1])
-with col_refresh_btn:
-    if st.button("🔄 " + t['refresh_button'], type="primary", key="refresh_final", help=t['refresh_help']):
-        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-        st.rerun()
 
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
 
@@ -1934,3 +1921,13 @@ with tab2:
         )
         
         st.plotly_chart(fig_ship_analytics, use_container_width=True)
+
+# ============================================
+# BOUTON REFRESH EN BAS (ne décale rien)
+# ============================================
+st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+col1, col2, col3 = st.columns([2, 1, 2])
+with col2:
+    if st.button("🔄 " + t['refresh_button'], type="primary", key="refresh_bottom", help=t['refresh_help'], use_container_width=True):
+        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+        st.rerun()
