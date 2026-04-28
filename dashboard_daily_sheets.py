@@ -382,6 +382,12 @@ st.sidebar.write("🔧 DEBUG")
 st.sidebar.write(f"Query params: {dict(st.query_params)}")
 st.sidebar.write(f"Refresh count: {st.session_state.refresh_count}")
 
+# BOUTON REFRESH DANS LA SIDEBAR (SOLUTION GARANTIE)
+st.sidebar.markdown("---")
+if st.sidebar.button("🔄 " + t['refresh_button'], help=t['refresh_help'], use_container_width=True, type="primary"):
+    st.session_state.refresh_count += 1
+    st.rerun()
+
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
 
