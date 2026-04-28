@@ -373,7 +373,7 @@ def load_data_from_sheets(_client):
             st.write(f"- {f.title} (ID: {f.id})")
         
         # Test 2 : Ouvrir par URL
-        GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/10h_8rBooLZlS0P7JO24wyQ1-Y_vHe6a1/edit"  # Change ça !
+        GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/1xzFbW08QXRKaD0snOvIVCjrN7itxfzXJBV6KjoO25hw/edit"  # Change ça !
         st.write(f"🔗 Tentative d'ouverture : {GOOGLE_SHEETS_URL}")
         
         spreadsheet = _client.open_by_url(GOOGLE_SHEETS_URL)
