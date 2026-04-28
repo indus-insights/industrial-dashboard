@@ -330,30 +330,46 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
-.refresh-btn {{
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 18px;
-    cursor: pointer !important;
-    transition: all 0.2s;
-    background: #4CAF50 !important;
-    border: none;
-    color: white;
-    pointer-events: auto !important;
-    z-index: 10000 !important;
-    position: relative !important;
+/* Style BEAU pour le bouton refresh Streamlit - positionné fixe à gauche */
+.refresh-button-container {{
+    position: fixed;
+    top: 75px;
+    left: 20px;
+    z-index: 9999;
 }}
-.refresh-btn:hover {{
-    background: #45a049;
-    transform: scale(1.1);
+.refresh-button-container button[kind="primary"] {{
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+    border: none !important;
+    border-radius: 25px !important;
+    padding: 10px 20px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+    cursor: pointer !important;
+}}
+.refresh-button-container button[kind="primary"]:hover {{
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4) !important;
+}}
+.refresh-button-container button[kind="primary"]:active {{
+    transform: translateY(0px) scale(0.98) !important;
 }}
 </style>
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
-    <button class="refresh-btn" onclick="window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
 </div>
 """, unsafe_allow_html=True)
+
+# Bouton refresh BEAU juste sous le sélecteur de langue
+st.markdown('<div class="refresh-button-container">', unsafe_allow_html=True)
+if st.button("🔄 " + t['refresh_button'], help=t['refresh_help'], type="primary", key="refresh_beautiful"):
+    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+    st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
 params = st.query_params
 
