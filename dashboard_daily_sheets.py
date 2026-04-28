@@ -355,7 +355,9 @@ params = st.query_params
 
 # Détecter le clic sur le bouton refresh
 if 'refresh' in params:
-    st.cache_data.clear()
+    if 'refresh_count' not in st.session_state:
+        st.session_state.refresh_count = 0
+    st.session_state.refresh_count += 1
     st.query_params.clear()
     st.rerun()
 
@@ -366,6 +368,10 @@ if 'lang' in params:
         st.session_state.language = new_lang
         st.query_params.clear()
         st.rerun()
+
+# Initialiser refresh_count si pas existant
+if 'refresh_count' not in st.session_state:
+    st.session_state.refresh_count = 0
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
@@ -391,10 +397,10 @@ def get_gsheet_client():
 
 # Charger les données depuis Google Sheets
 @st.cache_data(ttl=300) # 5 minutes de cache
-def load_data_from_sheets(_client):
+def load_data_from_sheets(_client, _force_refresh=None):
     """
     Charge les données depuis Google Sheets
-    ttl=60 signifie que les données sont actualisées toutes les 60 secondes
+    _force_refresh permet de forcer le rechargement même si le cache est valide
     """
     try:
         # Ouvrir le fichier Google Sheets par URL
@@ -447,8 +453,8 @@ def load_data_from_sheets(_client):
 # Initialiser la connexion
 gsheet_client = get_gsheet_client()
 
-# Charger les données
-daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client)
+# Charger les données (avec force refresh via session state)
+daily_df, weekly_df, soll_df, actions_df = load_data_from_sheets(gsheet_client, st.session_state.refresh_count)
 last_row = daily_df.iloc[-1]
 current_date = last_row['Date']
 
