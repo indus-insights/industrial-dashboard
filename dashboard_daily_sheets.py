@@ -378,11 +378,15 @@ if 'refresh_count' not in st.session_state:
     st.session_state.refresh_count = 0
 
 # BOUTON REFRESH EN HAUT À DROITE DE LA PAGE
-col_empty, col_refresh = st.columns([5, 1])
+col_empty, col_refresh, col_debug = st.columns([4, 1, 1])
 with col_refresh:
     if st.button("🔄 " + t['refresh_button'], help=t['refresh_help'], use_container_width=True, type="primary", key="refresh_main"):
         st.session_state.refresh_count += 1
         st.rerun()
+
+with col_debug:
+    # Afficher le compteur pour voir s'il change
+    st.write(f"🔢 Count: {st.session_state.refresh_count}")
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
