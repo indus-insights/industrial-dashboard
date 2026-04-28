@@ -347,7 +347,7 @@ st.markdown(f"""
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
-    <button class="refresh-btn" onclick="window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
+    <button class="refresh-btn" onclick="console.log('BOUTON CLIQUÉ'); alert('Test: bouton cliqué!'); window.location.href = window.location.pathname + '?refresh=' + Date.now()" title="{t['refresh_help']}">🔄</button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -372,6 +372,11 @@ if 'lang' in params:
 # Initialiser refresh_count si pas existant
 if 'refresh_count' not in st.session_state:
     st.session_state.refresh_count = 0
+
+# DEBUG: Afficher les query params reçus
+st.sidebar.write("🔧 DEBUG")
+st.sidebar.write(f"Query params: {dict(st.query_params)}")
+st.sidebar.write(f"Refresh count: {st.session_state.refresh_count}")
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
