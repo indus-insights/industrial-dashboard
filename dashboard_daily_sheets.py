@@ -144,23 +144,6 @@ st.markdown("""
     color: #666;
     margin-top: 4px;
 }
-.refresh-mini-btn {
-    display: inline-block;
-    margin-left: 12px;
-    padding: 4px 10px;
-    background: #4CAF50;
-    color: white;
-    border-radius: 12px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.25);
-}
-.refresh-mini-btn:hover {
-    background: #45a049;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.35);
-}
 .section-header {
     font-size: 14px;
     font-weight: 700;
@@ -1100,14 +1083,18 @@ with col_refresh_right:
         st.cache_data.clear()
         st.rerun()
 
-# Titre principal avec bouton refresh intégré
+# Bouton refresh en haut à droite (Streamlit pur)
+col_space, col_btn = st.columns([11, 1])
+with col_btn:
+    if st.button("🔄", key="refresh_top", help=t['refresh_help']):
+        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+        st.rerun()
+
+# Titre principal
 st.markdown(f"""
 <div class='main-header'>
     <div class='dashboard-title'>{t['title']}</div>
-    <div class='dashboard-date'>
-        {current_date.strftime('%d.%m.%Y')}
-        <span class='refresh-mini-btn' onclick='window.location.href = window.location.pathname + "?refresh=" + Date.now()' title='{t["refresh_help"]}'>🔄</span>
-    </div>
+    <div class='dashboard-date'>{current_date.strftime('%d.%m.%Y')}</div>
 </div>
 """, unsafe_allow_html=True)
 
