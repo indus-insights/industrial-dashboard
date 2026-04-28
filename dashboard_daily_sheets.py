@@ -330,6 +330,30 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
+/* Mini bouton refresh sticky en haut à droite */
+.sticky-refresh-btn {{
+    position: fixed;
+    top: 130px;
+    right: 30px;
+    z-index: 9999;
+}}
+.sticky-refresh-btn button {{
+    background: #4CAF50 !important;
+    border: none !important;
+    border-radius: 15px !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25) !important;
+    transition: all 0.2s !important;
+    cursor: pointer !important;
+}}
+.sticky-refresh-btn button:hover {{
+    background: #45a049 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.35) !important;
+}}
 </style>
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
@@ -1097,14 +1121,14 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Bouton refresh JUSTE AVANT les onglets, aligné à droite
-col_empty, col_refresh_btn = st.columns([5, 1])
-with col_refresh_btn:
-    if st.button("🔄 " + t['refresh_button'], type="primary", key="refresh_final", help=t['refresh_help']):
-        st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
-        st.rerun()
-
 tab1, tab2 = st.tabs([t['tab_dashboard'], t['tab_analytics']])
+
+# Mini bouton refresh sticky (toujours visible)
+st.markdown('<div class="sticky-refresh-btn">', unsafe_allow_html=True)
+if st.button("🔄", type="primary", key="refresh_sticky", help=t['refresh_help']):
+    st.session_state.refresh_count = st.session_state.get('refresh_count', 0) + 1
+    st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
 # ONGLET 1: DASHBOARD AVEC CARTES CLIQUABLES
