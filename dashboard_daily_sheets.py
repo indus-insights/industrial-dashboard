@@ -377,16 +377,12 @@ if 'lang' in params:
 if 'refresh_count' not in st.session_state:
     st.session_state.refresh_count = 0
 
-# DEBUG: Afficher les query params reçus
-st.sidebar.write("🔧 DEBUG")
-st.sidebar.write(f"Query params: {dict(st.query_params)}")
-st.sidebar.write(f"Refresh count: {st.session_state.refresh_count}")
-
-# BOUTON REFRESH DANS LA SIDEBAR (SOLUTION GARANTIE)
-st.sidebar.markdown("---")
-if st.sidebar.button("🔄 " + t['refresh_button'], help=t['refresh_help'], use_container_width=True, type="primary"):
-    st.session_state.refresh_count += 1
-    st.rerun()
+# BOUTON REFRESH EN HAUT À DROITE DE LA PAGE
+col_empty, col_refresh = st.columns([5, 1])
+with col_refresh:
+    if st.button("🔄 " + t['refresh_button'], help=t['refresh_help'], use_container_width=True, type="primary", key="refresh_main"):
+        st.session_state.refresh_count += 1
+        st.rerun()
 
 # Chargement des données
 file_mod_time = os.path.getmtime('daily_dashboard1.xlsx')
