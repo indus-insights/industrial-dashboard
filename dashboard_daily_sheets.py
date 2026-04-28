@@ -386,10 +386,15 @@ def load_data_from_sheets(_client):
         weekly = pd.DataFrame(weekly_sheet.get_all_records())
         soll = pd.DataFrame(soll_sheet.get_all_records())
         actions = pd.DataFrame(actions_sheet.get_all_records())
-        
+
         # Convertir la colonne Date (accepte plusieurs formats)
         daily['Date'] = pd.to_datetime(daily['Date'], dayfirst=True, errors='coerce')
-        
+
+        # Convertir les colonnes numériques de weekly en nombres
+        weekly['Week'] = pd.to_numeric(weekly['Week'], errors='coerce')
+        weekly['WCompleted'] = pd.to_numeric(weekly['WCompleted'], errors='coerce')
+        weekly['WTotal'] = pd.to_numeric(weekly['WTotal'], errors='coerce')
+
         return daily, weekly, soll, actions
         
     except gspread.SpreadsheetNotFound:
