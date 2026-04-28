@@ -336,6 +336,11 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# Bouton refresh sous le sélecteur de langue
+if st.button(t['refresh_button'], help=t['refresh_help']):
+    st.cache_data.clear()
+    st.rerun()
+
 params = st.query_params
 if 'lang' in params:
     new_lang = params['lang']
@@ -1075,13 +1080,6 @@ def show_shipments_chart():
     )
     
     st.plotly_chart(fig_ship, use_container_width=True)
-
-# Bouton refresh en haut à droite
-col_space, col_refresh = st.columns([5, 1])
-with col_refresh:
-    if st.button(t['refresh_button'], help=t['refresh_help'], use_container_width=True):
-        st.cache_data.clear()
-        st.rerun()
 
 # Titre principal (centré)
 st.markdown(f"""
