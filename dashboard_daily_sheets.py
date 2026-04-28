@@ -290,7 +290,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Switch de langue avec bouton refresh intégré
+# Switch de langue AVEC bouton refresh intégré en HTML pur
 st.markdown(f"""
 <style>
 .language-selector {{
@@ -329,20 +329,27 @@ st.markdown(f"""
     background: #f5f5f5;
     transform: scale(1.05);
 }}
+.refresh-btn {{
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #4CAF50;
+    border: none;
+    color: white;
+}}
+.refresh-btn:hover {{
+    background: #45a049;
+    transform: scale(1.1);
+}}
 </style>
 <div class="language-selector">
     <a href="?lang=en" class="lang-option {'active' if st.session_state.language == 'en' else 'inactive'}">EN</a>
     <a href="?lang=de" class="lang-option {'active' if st.session_state.language == 'de' else 'inactive'}">DE</a>
+    <button class="refresh-btn" onclick="window.location.href = window.location.href.split('?')[0]" title="{t['refresh_help']}">🔄</button>
 </div>
 """, unsafe_allow_html=True)
-
-# Bouton refresh (Streamlit natif juste après)
-col1, col2, col3 = st.columns([1, 4, 1])
-with col1:
-    st.markdown("<div style='height: 70px;'></div>", unsafe_allow_html=True)  # Espaceur pour descendre sous le sélecteur
-    if st.button("🔄", help=t['refresh_help'], key='refresh_btn'):
-        st.cache_data.clear()
-        st.rerun()
 
 params = st.query_params
 if 'lang' in params:
