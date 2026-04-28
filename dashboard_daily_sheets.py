@@ -55,7 +55,9 @@ TRANSLATIONS = {
         'col_responsible': 'Responsible',
         'col_action': 'Action',
         'col_deadline': 'Deadline',
-        'col_status': 'Status'
+        'col_status': 'Status',
+        'refresh_button': '🔄 Refresh',
+        'refresh_help': 'Reload data from Google Sheets'
     },
     'de': {
         'title': 'TÄGLICHES PRODUKTIONS-DASHBOARD',
@@ -101,7 +103,9 @@ TRANSLATIONS = {
         'col_responsible': 'Verantwortlich',
         'col_action': 'Aktion',
         'col_deadline': 'Deadline',
-        'col_status': 'Status'
+        'col_status': 'Status',
+        'refresh_button': '🔄 Refresh',
+        'refresh_help': 'Reload data from Google Sheets'
     }
 }
 
@@ -363,7 +367,7 @@ def get_gsheet_client():
     return gspread.authorize(credentials)
 
 # Charger les données depuis Google Sheets
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=300) # 5 minutes de cache
 def load_data_from_sheets(_client):
     """
     Charge les données depuis Google Sheets
@@ -398,7 +402,7 @@ def load_data_from_sheets(_client):
         # Convertir les dates du tableau Actions
         actions['Datum'] = pd.to_datetime(actions['Datum'], dayfirst=True, errors='coerce')
         actions['Deadline'] = pd.to_datetime(actions['Deadline'], dayfirst=True, errors='coerce')
-        
+
         return daily, weekly, soll, actions
         
     except gspread.SpreadsheetNotFound:
@@ -1072,6 +1076,12 @@ def show_shipments_chart():
     
     st.plotly_chart(fig_ship, use_container_width=True)
 
+# Bouton refresh
+col_refresh_left, col_refresh_right = st.columns([6, 1])
+with col_refresh_right:
+    if st.button(t['refresh_button'], help=t['refresh_help']):
+        st.cache_data.clear()
+        st.rerun()
 
 # Titre principal
 st.markdown(f"""
