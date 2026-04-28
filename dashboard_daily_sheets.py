@@ -290,7 +290,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Switch de langue
+# Switch de langue avec bouton refresh intégré
 st.markdown(f"""
 <style>
 .language-selector {{
@@ -336,13 +336,13 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Bouton refresh sous le sélecteur de langue (avec container visible pour debug)
-st.markdown("<div style='background: yellow; padding: 10px; margin: 10px;'>", unsafe_allow_html=True)
-st.write("DEBUG: Le bouton devrait être ici 👇")
-if st.button(t['refresh_button'], help=t['refresh_help'], key='refresh_btn'):
-    st.cache_data.clear()
-    st.rerun()
-st.markdown("</div>", unsafe_allow_html=True)
+# Bouton refresh (Streamlit natif juste après)
+col1, col2, col3 = st.columns([1, 4, 1])
+with col1:
+    st.markdown("<div style='height: 70px;'></div>", unsafe_allow_html=True)  # Espaceur pour descendre sous le sélecteur
+    if st.button("🔄", help=t['refresh_help'], key='refresh_btn'):
+        st.cache_data.clear()
+        st.rerun()
 
 params = st.query_params
 if 'lang' in params:
